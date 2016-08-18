@@ -1,19 +1,59 @@
 <!DOCTYPE html>
+
+<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+<!-- Uses bootstrap: https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel = "stylesheet">
+
 <style>
 #mainTitle {
-	font-family: italic;
+	body {
+	  background-color: green;
+	}
+	#mainTitle {
+		font-family: oswald;
+		font-size: 50px;
+	  font-style: bold;
+	  color:
+	}
+	#quotePlace {
+	  background-color: blue;
+	}
 };
 </style>
 
+<!-- Uses jQuery 2.2.4-->
 <script>
-
+	$(document).ready(
+	  $("#buttonClick").on("click", function() {
+	    $("#quotePlace").html("Generating Quote");
+	    $.ajax({
+	      url: "https://andruxnet-random-famous-quotes.p.mashape.com/",
+	      type: "GET",
+	      dataType: "json",
+	      success: function(val) {
+	        $("#quotePlace").html(val["quote"]);
+	      },
+	      error: function() {
+	        alert("API call fail.");
+	      },
+	      beforeSend: function(xhr) {
+	        xhr.setRequestHeader("X-Mashape-Authorization", "68AsDDxmxkmshjVsbCwuClZ9b2ehp1HDC5xjsnsLbZVH4zKVaP");
+	      }
+	    });
+	  }));
 </script>
 
 <html>
 	<head>
 	</head>
 	<body>
-	  <h1 id="mainTitle">Random Quote Generator</h1>
-	  <div id="quotePlace"></div>
-	</body>
+  		<h1 id="mainTitle" class="container text-center">Random Quote Generator</h1>
+	  	<div id="quotePlace" class="text-center">
+	    	Quotes go here
+	  	</div>
+	  	<div class="row text-center">
+	 		<button id="buttonClick">Click here</button>
+	  	</div>
+
+</body>
 </html>
