@@ -1,59 +1,123 @@
 <!DOCTYPE html>
+<!-- Font awesome -->
+<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 
+<!-- Oswald font -->
 <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+
 <!-- Uses bootstrap: https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css -->
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel = "stylesheet">
 
 <style>
 #mainTitle {
 	body {
-	  background-color: green;
+	  background-color: #4dff4d;
+	}
+	#bodyWrapper {
+	  background-color: #33d6ff;
 	}
 	#mainTitle {
 		font-family: oswald;
 		font-size: 50px;
 	  font-style: bold;
 	  color:
-	}
+	};
 	#quotePlace {
 	  background-color: blue;
 	}
-};
 </style>
 
 <!-- Uses jQuery 2.2.4-->
 <script>
-	$(document).ready(
-	  $("#buttonClick").on("click", function() {
-	    $("#quotePlace").html("Generating Quote");
-	    $.ajax({
-	      url: "https://andruxnet-random-famous-quotes.p.mashape.com/",
-	      type: "GET",
-	      dataType: "json",
-	      success: function(val) {
-	        $("#quotePlace").html(val["quote"]);
-	      },
-	      error: function() {
-	        alert("API call fail.");
-	      },
-	      beforeSend: function(xhr) {
-	        xhr.setRequestHeader("X-Mashape-Authorization", "68AsDDxmxkmshjVsbCwuClZ9b2ehp1HDC5xjsnsLbZVH4zKVaP");
-	      }
-	    });
-	  }));
+	var currentTweet = "";
+var currentAuthor = "";
+
+$(document).ready(function() {
+  connectionQuoteAPI();
+  $("#twitterButton").on("click", function() {
+    if (currentTweet.length + 4 + currentAuthor.length > 140) {
+      alert("Quote and Author are too long to tweet.")
+    } else {
+    	
+      // Credit to DHANANJAY KUMAR for introducing me to twitters status in the url, plus encodeURIComponent().
+      var twitLink = "http://twitter.com/home?status=" + encodeURIComponent('"' + currentTweet + '" -' + currentAuthor);
+      window.open(twitLink, "_blank");
+
+
+      // unnessary stuff about apis. (might be useful later?)
+      /*
+      $.ajax({
+        url: "https://api.twitter.com/1.1/statuses/update.json",
+        type: "POST",
+        data: {
+          status: '"' + currentTweet + '" -' + currentAuthor
+        },
+        dataType: "json",
+        success: function() {
+          alert("Quote tweeted!");
+        },
+        error: function() {
+            alert("Quote UNSUCCESSFULLY tweeted");
+          }
+          
+          beforeSend: function(xhr){
+            xhr.setRequestHeader("APIKEYGOESHERE")
+          }
+          */
+      }})
+    });
+  $("#buttonClick").on("click", function() {
+    // clear the quote area and let user know quote is
+    // being generated.
+    // Quote button will move. Should make static.
+    $("#quotePlace").html("Generating Quote");
+    $("#authorPlace").html("");
+    connectionQuoteAPI();
+
+  });
+
+
+// Connect to the famous quotes api and send a get request.
+// V1.0: Called at start of program, and when "click for
+//       quote" button is pressed
+function connectionQuoteAPI() {
+  $.ajax({
+    url: "https://andruxnet-random-famous-quotes.p.mashape.com/",
+    type: "GET",
+    dataType: "json",
+    success: function(val) {
+      $("#quotePlace").html(val["quote"]);
+      $("#authorPlace").html("-" + val["author"]);
+      currentTweet = val["quote"];
+      currentAuthor = val["author"];
+    },
+    error: function() {
+      alert("API call fail.");
+    },
+    beforeSend: function(xhr) {
+      xhr.setRequestHeader("X-Mashape-Authorization", "68AsDDxmxkmshjVsbCwuClZ9b2ehp1HDC5xjsnsLbZVH4zKVaP");
+    }
+  })
+};
 </script>
 
 <html>
 	<head>
 	</head>
 	<body>
-  		<h1 id="mainTitle" class="container text-center">Random Quote Generator</h1>
-	  	<div id="quotePlace" class="text-center">
-	    	Quotes go here
-	  	</div>
-	  	<div class="row text-center">
-	 		<button id="buttonClick">Click here</button>
-	  	</div>
+  <div id="bodyWrapper" class="container">
+    <h1 id="mainTitle" class="container text-center">Random Quote Generator</h1>
+    <div id="quotePlace" class="text-center">
+    </div>
+    <div id="authorPlace" class="text-center">
+    </div>
+    <div class="row text-center" id="buttonRow">
+      <button id="buttonClick">Click here for Quote</button>
+    </div>
+    <div class="row text-center" id="twitterButton">
+      <a><i class="fa fa-twitter-square fa-5x" aria-hidden="true"></i></a>
+    </div>
+  </div>
 
 </body>
 </html>
